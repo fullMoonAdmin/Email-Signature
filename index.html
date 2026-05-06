@@ -696,28 +696,70 @@ function getSigHTML() {
 
 function copySig(btn) {
   const html = getSigHTML();
+
+  // Method 1: Modern clipboard API with rich HTML (works in Claude, some browsers)
   if (navigator.clipboard && window.ClipboardItem) {
-    const blob = new Blob([html], { type: 'text/html' });
-    navigator.clipboard.write([new ClipboardItem({ 'text/html': blob })]).then(() => showCopied(btn)).catch(() => fallbackCopy(html, btn));
+    try {
+      const blob = new Blob([html], { type: 'text/html' });
+      const textBlob = new Blob([html], { type: 'text/plain' });
+      navigator.clipboard.write([
+        new ClipboardItem({ 'text/html': blob, 'text/plain': textBlob })
+      ]).then(() => showCopied(btn)).catch(() => method2(html, btn));
+      return;
+    } catch(e) { method2(html, btn); }
   } else {
-    fallbackCopy(html, btn);
+    method2(html, btn);
   }
 }
 
-function fallbackCopy(html, btn) {
-  const ta = document.createElement('textarea');
-  ta.value = html;
-  ta.style.cssText = 'position:fixed;top:-9999px;opacity:0;';
-  document.body.appendChild(ta);
-  ta.select();
-  document.execCommand('copy');
-  document.body.removeChild(ta);
-  showCopied(btn);
+function method2(html, btn) {
+  // Method 2: Write to a hidden contenteditable div and copy from it
+  // This preserves HTML formatting in email clients
+  try {
+    const div = document.createElement('div');
+    div.setAttribute('contenteditable', 'true');
+    div.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;overflow:hidden;width:1px;height:1px;';
+    div.innerHTML = html;
+    document.body.appendChild(div);
+
+    const range = document.createRange();
+    range.selectNodeContents(div);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+
+    const success = document.execCommand('copy');
+    sel.removeAllRanges();
+    document.body.removeChild(div);
+
+    if (success) { showCopied(btn); }
+    else { method3(html, btn); }
+  } catch(e) { method3(html, btn); }
 }
 
-function showCopied(btn) {
+function method3(html, btn) {
+  // Method 3: Plain text fallback — copies raw HTML code
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = html;
+    ta.style.cssText = 'position:fixed;top:-9999px;opacity:0;';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showCopied(btn, true);
+  } catch(e) {
+    alert('Copy failed. Please manually select and copy the code from the preview area.');
+  }
+}
+
+function fallbackCopy(html, btn) { method2(html, btn); }
+
+function showCopied(btn, plainText) {
   btn.classList.add('copied');
-  btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+  btn.innerHTML = plainText
+    ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Copied as HTML code'
+    : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
   setTimeout(() => {
     btn.classList.remove('copied');
     btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy Signature HTML';
