@@ -657,23 +657,41 @@ function getSigHTML() {
     </tr>`;
   }
 
-  return `<table cellpadding="0" cellspacing="0" border="0" width="450" style="font-family:'PT Sans Caption','PT Sans',Arial,sans-serif;font-size:10px;color:#222222;width:450px;max-width:450px;">
+  return `<div>
+<style>
+  @media (prefers-color-scheme: dark) {
+    .fmp-sig-name { color: #ffffff !important; }
+    .fmp-sig-title { color: #bbbbbb !important; }
+    .fmp-sig-company { color: #cccccc !important; }
+    .fmp-sig-contact { color: #cccccc !important; }
+    .fmp-sig-contact a { color: #cccccc !important; }
+    .fmp-sig-contact a.fmp-email { color: #6ab0d4 !important; }
+    .fmp-sig-address { color: #cccccc !important; }
+    .fmp-sig-address a { color: #cccccc !important; }
+    .fmp-sig-website a { color: #6ab0d4 !important; }
+    .fmp-sig-divider { background-color: #555555 !important; }
+    .fmp-sig-disclaimer { color: #777777 !important; }
+    .fmp-sig-logo { filter: invert(1) !important; }
+  }
+</style>
+<table class="fmp-sig-wrap" cellpadding="0" cellspacing="0" border="0" width="450" style="font-family:'PT Sans Caption','PT Sans',Arial,sans-serif;font-size:10px;color:#222222;width:450px;max-width:450px;">
   <tr>
     <td valign="middle" width="68" style="width:68px;padding-right:12px;vertical-align:middle;">
-      <img src="${LOGO}" alt="Full Moon Productions" width="56" height="56" style="display:block;width:56px;height:56px;border:0;">
+      <img class="fmp-sig-logo" src="${LOGO}" alt="Full Moon Productions" width="56" height="56" style="display:block;width:56px;height:56px;border:0;">
     </td>
-    <td width="1" style="background-color:#cccccc;width:1px;padding:0;vertical-align:middle;">&nbsp;</td>
+    <td class="fmp-sig-divider" width="1" style="background-color:#cccccc;width:1px;padding:0;vertical-align:middle;">&nbsp;</td>
     <td valign="middle" style="padding-left:14px;vertical-align:middle;">
-      <p style="margin:0 0 1px 0;padding:0;font-family:'PT Sans Caption','PT Sans',Arial,sans-serif;font-size:20px;font-weight:700;color:#111111;line-height:1.15;">${name}</p>
-      <p style="margin:0 0 5px 0;padding:0;font-family:'PT Sans Caption','PT Sans',Arial,sans-serif;font-size:12px;font-style:italic;color:#444444;">${title}</p>
-      <p style="margin:0 0 3px 0;padding:0;font-family:'PT Sans Caption','PT Sans',Arial,sans-serif;font-size:10px;color:#333333;">Full Moon Productions, Inc.&nbsp;&nbsp;|&nbsp;&nbsp;Group Real Estate Development, LLC</p>
-      <p style="margin:0 0 3px 0;padding:0;font-family:'PT Sans Caption','PT Sans',Arial,sans-serif;font-size:10px;color:#333333;">${label}:&nbsp;<a href="tel:+1${phoneRaw}" style="color:#333333;text-decoration:none;">${phone}</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="mailto:${email}" style="color:#1a73a7;text-decoration:none;">${email}</a></p>
-      <p style="margin:0;padding:0;font-family:'PT Sans Caption','PT Sans',Arial,sans-serif;font-size:10px;color:#333333;"><a href="${MAPS}" style="color:#333333;text-decoration:none;">1401 W 13th Street, Kansas City, MO 64102</a></p>
+      <p class="fmp-sig-name" style="margin:0 0 1px 0;padding:0;font-family:'PT Sans Caption','PT Sans',Arial,sans-serif;font-size:20px;font-weight:700;color:#111111;line-height:1.15;">${name}</p>
+      <p class="fmp-sig-title" style="margin:0 0 5px 0;padding:0;font-family:'PT Sans Caption','PT Sans',Arial,sans-serif;font-size:12px;font-style:italic;color:#444444;">${title}</p>
+      <p class="fmp-sig-company" style="margin:0 0 3px 0;padding:0;font-family:'PT Sans Caption','PT Sans',Arial,sans-serif;font-size:10px;color:#333333;">Full Moon Productions, Inc.&nbsp;&nbsp;|&nbsp;&nbsp;Group Real Estate Development, LLC</p>
+      <p class="fmp-sig-contact" style="margin:0 0 3px 0;padding:0;font-family:'PT Sans Caption','PT Sans',Arial,sans-serif;font-size:10px;color:#333333;">${label}:&nbsp;<a href="tel:+1${phoneRaw}" style="color:#333333;text-decoration:none;">${phone}</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a class="fmp-email" href="mailto:${email}" style="color:#1a73a7;text-decoration:none;">${email}</a></p>
+      <p class="fmp-sig-address" style="margin:0;padding:0;font-family:'PT Sans Caption','PT Sans',Arial,sans-serif;font-size:10px;color:#333333;"><a href="${MAPS}" style="color:#333333;text-decoration:none;">1401 W 13th Street, Kansas City, MO 64102</a></p>
       ${websiteHTML}${socialHTML}
     </td>
   </tr>
   ${discHTML}
-</table>`;
+</table>
+</div>`;
 }
 
 function copySig(btn) {
