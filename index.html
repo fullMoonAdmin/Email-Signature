@@ -523,11 +523,17 @@
 
     <div class="copy-area">
       <div class="section-label">Export</div>
-      <p class="copy-hint"><strong>Click the button below</strong> to copy the signature HTML, then paste it into your email client's signature editor.</p>
-      <button class="btn-copy" onclick="copySig(this)">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-        Copy Signature HTML
-      </button>
+      <p class="copy-hint"><strong>Outlook / Apple Mail / Gmail:</strong> Use Copy to paste directly into your email client's signature editor.<br><br><strong>Thunderbird (Linux/Mac/Windows):</strong> Use Download to save a <code style="background:#333;padding:1px 5px;font-size:0.8em;">signature.html</code> file, then point Thunderbird to it under Account Settings → Signature.</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <button class="btn-copy" onclick="copySig(this)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy Signature HTML
+        </button>
+        <button class="btn-copy" onclick="downloadSig()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download signature.html
+        </button>
+      </div>
     </div>
 
     <div class="instructions">
@@ -764,6 +770,28 @@ function showCopied(btn, plainText) {
     btn.classList.remove('copied');
     btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy Signature HTML';
   }, 2500);
+}
+
+function downloadSig() {
+  const html = getSigHTML();
+  const full = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+</head>
+<body>
+${html}
+</body>
+</html>`;
+  const blob = new Blob([full], { type: 'text/html' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'signature.html';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 // init
