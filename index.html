@@ -1,8 +1,170 @@
-<!-- ========================= -->
-<!-- UPDATED PREVIEW PANEL -->
-<!-- ========================= -->
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Full Moon Productions — Signature Builder</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f3ef;
+    --gold: #c9a84c;
+    --gold-dim: #8a6e30;
+    --gray: #2a2a2a;
+    --mid: #444;
+    --light: #888;
+    --border: #333;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Barlow', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+  }
+
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 28px 48px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  header img {
+    width: 52px;
+    height: 52px;
+    object-fit: contain;
+    filter: invert(1);
+  }
+
+  header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 1.6rem;
+    letter-spacing: 0.08em;
+    color: var(--white);
+  }
+
+  header span {
+    font-size: 0.75rem;
+    color: var(--gold);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-left: 2px;
+    display: block;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    min-height: calc(100vh - 97px);
+  }
+
+  .form-panel {
+    border-right: 1px solid var(--border);
+    padding: 40px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    overflow-y: auto;
+  }
+
+  .section-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .field-group { display: flex; flex-direction: column; gap: 14px; }
+
+  .field { display: flex; flex-direction: column; gap: 5px; }
+
+  label {
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--light);
+  }
+
+  input, select, textarea {
+    background: var(--gray);
+    border: 1px solid var(--border);
+    color: var(--white);
+    font-family: 'Barlow', sans-serif;
+    font-weight: 300;
+    font-size: 0.9rem;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+    resize: none;
+  }
+
+  input:focus, select:focus, textarea:focus { border-color: var(--gold); }
+  input::placeholder, textarea::placeholder { color: var(--mid); }
+  select option { background: var(--gray); }
+
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .toggle-row label {
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: none;
+    color: var(--white);
+    opacity: 0.7;
+  }
+
+  .toggle {
+    position: relative;
+    width: 36px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+  .toggle input { opacity: 0; width: 0; height: 0; }
+
+  .toggle-slider {
+    position: absolute;
+    inset: 0;
+    background: var(--border);
+    cursor: pointer;
+    transition: background 0.2s;
+    border-radius: 20px;
+  }
+
+  .toggle-slider::before {
+    content: '';
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    left: 3px;
+    top: 3px;
+    background: var(--light);
+    border-radius: 50%;
+    transition: transform 0.2s, background 0.2s;
+  }
+
+  .toggle input:checked + .toggle-slider { background: var(--gold-dim); }
+  .toggle input:checked + .toggle-slider::before {
+    transform: translateX(16px);
+    background: var(--gold);
+  }
+
   .preview-panel {
     padding: 40px 48px;
     display: flex;
@@ -10,45 +172,244 @@
     gap: 32px;
   }
 
-  .preview-layout {
+  .preview-panel .section-label { margin-bottom: 20px; }
+
+  .preview-and-export {
     display: flex;
-    gap: 32px;
+    flex-direction: row;
+    gap: 40px;
     align-items: flex-start;
   }
 
-  .preview-main {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .preview-side {
-    width: 320px;
+  .preview-col {
     flex-shrink: 0;
   }
 
-  .preview-panel .section-label {
-    margin-bottom: 20px;
+  .export-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    min-width: 240px;
   }
-</style>
 
+  /* preview bg switcher */
+  .bg-switcher {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .bg-btn {
+    font-family: 'Barlow', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--light);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .bg-btn.active { border-color: var(--gold); color: var(--gold); }
+
+  #sig-preview-wrapper {
+    display: inline-block;
+    border: 1px solid var(--border);
+    transition: background 0.2s;
+  }
+
+  #sig-preview-wrapper.bg-white  { background: #ffffff; }
+  #sig-preview-wrapper.bg-dark   { background: #1a1a1a; }
+  #sig-preview-wrapper.bg-trans  { background: transparent; background-image: linear-gradient(45deg,#555 25%,transparent 25%),linear-gradient(-45deg,#555 25%,transparent 25%),linear-gradient(45deg,#555 25%,transparent 25%),linear-gradient(-45deg,#555 25%,transparent 25%); background-size: 20px 20px; background-position: 0 0,10px 0,10px -10px,0px -10px; }
+
+  /* ── SIGNATURE STYLES (inline for email export) ── */
+  .sig-wrap {
+    width: 450px;
+    font-family: 'PT Sans Caption', 'PT Sans', Arial, sans-serif;
+    font-size: 10px;
+    color: #222222;
+    line-height: 1.4;
+  }
+
+  .sig-main-row {
+    display: table;
+    width: 100%;
+    height: 76px;
+  }
+
+  .sig-logo-cell {
+    display: table-cell;
+    vertical-align: middle;
+    width: 68px;
+    padding-right: 12px;
+  }
+
+  .sig-logo-cell img {
+    display: block;
+    width: 56px;
+    height: auto;
+    border: 0;
+  }
+
+  .sig-divider-cell {
+    display: table-cell;
+    vertical-align: middle;
+    width: 1px;
+    background: #cccccc;
+    padding: 0;
+  }
+
+  .sig-info-cell {
+    display: table-cell;
+    vertical-align: middle;
+    padding-left: 14px;
+  }
+
+  .sig-name {
+    font-family: 'PT Sans Caption', 'PT Sans', Arial, sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #111111;
+    line-height: 1.15;
+    margin: 0 0 1px 0;
+    padding: 0;
+  }
+
+  .sig-title {
+    font-family: 'PT Sans Caption', 'PT Sans', Arial, sans-serif;
+    font-size: 12px;
+    font-style: italic;
+    font-weight: 400;
+    color: #444444;
+    margin: 0 0 5px 0;
+    padding: 0;
+  }
+
+  .sig-company {
+    font-family: 'PT Sans Caption', 'PT Sans', Arial, sans-serif;
+    font-size: 10px;
+    color: #333333;
+    margin: 0 0 3px 0;
+    padding: 0;
+  }
+
+  .sig-contact {
+    font-family: 'PT Sans Caption', 'PT Sans', Arial, sans-serif;
+    font-size: 10px;
+    color: #333333;
+    margin: 0 0 3px 0;
+    padding: 0;
+  }
+
+  .sig-contact a { color: #333333; text-decoration: none; }
+  .sig-contact a.email-link { color: #1a73a7; text-decoration: none; }
+
+  .sig-address {
+    font-family: 'PT Sans Caption', 'PT Sans', Arial, sans-serif;
+    font-size: 10px;
+    color: #333333;
+    margin: 0;
+    padding: 0;
+  }
+
+  .sig-address a { color: #333333; text-decoration: none; }
+
+  .sig-website {
+    font-family: 'PT Sans Caption', 'PT Sans', Arial, sans-serif;
+    font-size: 10px;
+    margin: 3px 0 0 0;
+    padding: 0;
+  }
+
+  .sig-website a { color: #1a73a7; text-decoration: none; }
+
+  .sig-social {
+    margin-top: 3px;
+    font-family: 'PT Sans Caption', 'PT Sans', Arial, sans-serif;
+    font-size: 10px;
+  }
+
+  .sig-disclaimer-wrap {
+    border-top: 1px solid #dddddd;
+    margin-top: 6px;
+    padding-top: 5px;
+  }
+
+  .sig-disclaimer-wrap p {
+    font-family: 'PT Sans Caption', 'PT Sans', Arial, sans-serif;
+    font-size: 6px;
+    color: #999999;
+    line-height: 1.4;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* ── COPY BUTTON ── */
+  .copy-area { display: flex; flex-direction: column; gap: 12px; }
+
+  .copy-hint { font-size: 0.75rem; color: var(--light); line-height: 1.5; }
+  .copy-hint strong { color: var(--white); }
+
+  .btn-copy {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    font-family: 'Barlow', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 12px 24px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    width: fit-content;
+  }
+
+  .btn-copy:hover { background: var(--gold); color: var(--black); }
+  .btn-copy.copied { background: #2a4a2a; border-color: #4a8a4a; color: #7dbd7d; }
+
+  .instructions {
+    background: var(--gray);
+    border: 1px solid var(--border);
+    padding: 20px 24px;
+    font-size: 0.8rem;
+    line-height: 1.7;
+    color: #aaa;
+  }
+
+  .instructions strong { color: var(--white); display: block; margin-bottom: 6px; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; }
+  .instructions ol { padding-left: 18px; }
+  .instructions li { margin-bottom: 4px; }
+</style>
+<link href="https://fonts.googleapis.com/css2?family=PT+Sans+Caption:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header>
+  <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMzguNzUgMzY0IDE1MC41Ij4KICAKPHN0eWxlPgogIC5zdDAgewogICAgZmlsbDogbm9uZTsKICB9CiAgLnN0MSB7CiAgICBmaWxsOiAjQzdBODRDOwogIH0KICAKPC9zdHlsZT4KICAKPG1hc2sgaWQ9Im1hc2swIiBzdHlsZT0ibWFzay10eXBlOiBsdW1pbmFuY2U7Ij4KICAKPHJLZWN0IGNsYXNzPSJzdDAiIHdpZHRoPSIzNjQiIGhlaWdodD0iMzkwLjI1Ii8+CiAgCjwvbWFzaz4KICAKPGCZ3N0eWxlPSJtYXNrOiB1cmwoI21hc2swKTsiPgogIAogIDxyZWN0IHg9IjAuODMiIHk9IjM4Ljc1IiB3aWR0aD0iMzYzLjUyIiBoZWlnaHQ9IjE1MC41IiBzdHlsZT0iZmlsbDogI0M3QTg0QzsiLz4KICAKPC9nPgogIAo8ZWxsaXBzZSBjeD0iODIiIGN5PSI2NyIgcng9IjMxLjA2IiByeT0iMzEuODkiIHN0eWxlPSJmaWxsOiAjQzdBODRDOyIvPgogIAo8cGF0aCBjbGFzcz0ic3QxIiBkPSJNMTMxLDM4Ljc1YzAsLTE4LjA5IDE0LjYxLC0zMi43MzAzMy4yOSwtMzIuNzNjMTguNjgsMCAzMy44OSwxNC42MSwzMy44OSwzMi43M3YxNTAuNTBoLTM0LjQzVjM4Ljc1eiIvPgogIAo8cmVjdCB4PSIxNzguMzIiIHk9IjM4Ljc1IiB3aWR0aD0iMzQuMDUiIGhlaWdodD0iMTUwLjUiIHN0eWxlPSJmaWxsOiAjQzdBODRDOyIvPgogIAo8cGF0aCBjbGFzcz0ic3QxIiBkPSJNMjY4LjcsODkuMjVjMC0xOC42OCAxNS4xOS0zMy44OCAzMy44OC0zMy44OHMzMy44OSwxNS4xOSwzMy44OSwzMy44OHMtMTUuMTksMzMuODgtMzMuODksMzMuODhjLTE4LjY4LC0wLjAzLTMzLjg4LTE1LjIyLTMzLjg4LTMzLjg4WiIvPgogIAo8cGF0aCBjbGFzcz0ic3QxIiBkPSJNMjY4LjcsMTY4LjA2YzAtMTUuNDkgMTIuNTQtMjguMDMgMjguMDMtMjguMDNoMjkuNDVjMTUuNDksMCAyOC4wMywxMi41NCAyOC4wMywyOC4wM3YyMC4yNGgtNTUuNTFWMTY4LjA2WiIvPgogIAo8L3N2Zz4=" alt="logo">
+  <div>
+    <h1>Full Moon Productions</h1>
+    <span>Email Signature Builder</span>
+  </div>
+</header>
 
 <div class="layout">
 
-  <!-- ========================= -->
-  <!-- LEFT FORM PANEL -->
-  <!-- ========================= -->
+  <!-- ── FORM PANEL ── -->
   <div class="form-panel">
 
-    <!-- STAFF INFO -->
     <div>
       <div class="section-label">Staff Information</div>
-
       <div class="field-group">
         <div class="field">
           <label>Full Name</label>
           <input type="text" id="f-name" placeholder="e.g. Harrison Brent" oninput="updateSig()">
         </div>
-
         <div class="field">
           <label>Job Title</label>
           <input type="text" id="f-title" placeholder="e.g. IT Manager" oninput="updateSig()">
@@ -56,232 +417,410 @@
       </div>
     </div>
 
-    <!-- CONTACT -->
     <div>
       <div class="section-label">Contact</div>
-
       <div class="field-group">
-
         <div class="field">
           <label>Phone Number</label>
           <input type="tel" id="f-phone" placeholder="(816) 000-0000" oninput="updateSig()">
         </div>
-
         <div class="field">
           <label>Phone Label</label>
-
           <select id="f-phonelabel" onchange="updateSig()">
             <option value="Mobile">Mobile</option>
             <option value="Office">Office</option>
             <option value="Direct">Direct</option>
           </select>
         </div>
-
         <div class="field">
           <label>Email Address</label>
           <input type="email" id="f-email" placeholder="name@fullmoonprod.com" oninput="updateSig()">
         </div>
-
       </div>
     </div>
 
-    <!-- OPTIONAL SECTIONS -->
     <div>
-
       <div class="section-label">Optional Sections</div>
-
-      <!-- WEBSITE -->
       <div class="toggle-row">
         <label>Show Website</label>
-
         <label class="toggle">
           <input type="checkbox" id="t-website" onchange="updateSig()">
           <span class="toggle-slider"></span>
         </label>
       </div>
-
       <div class="field" id="website-field" style="display:none; margin-top:12px;">
         <label>Website URL</label>
-
-        <input
-          type="text"
-          id="f-website"
-          placeholder="https://www.fullmoonprod.com"
-          oninput="updateSig()">
+        <input type="text" id="f-website" placeholder="https://www.fullmoonprod.com" oninput="updateSig()">
       </div>
 
-      <!-- SOCIAL -->
       <div class="toggle-row">
         <label>Show Social Links</label>
-
         <label class="toggle">
           <input type="checkbox" id="t-social" onchange="updateSig()">
           <span class="toggle-slider"></span>
         </label>
       </div>
-
-      <div id="social-fields"
-           style="display:none; margin-top:12px; flex-direction:column; gap:10px;">
-
+      <div id="social-fields" style="display:none; margin-top:12px; flex-direction:column; gap:10px;">
         <div class="field">
           <label>Facebook URL</label>
-          <input type="text" id="f-facebook"
-                 placeholder="https://facebook.com/..."
-                 oninput="updateSig()">
+          <input type="text" id="f-facebook" placeholder="https://facebook.com/..." oninput="updateSig()">
         </div>
-
         <div class="field">
           <label>Instagram URL</label>
-          <input type="text" id="f-instagram"
-                 placeholder="https://instagram.com/..."
-                 oninput="updateSig()">
+          <input type="text" id="f-instagram" placeholder="https://instagram.com/..." oninput="updateSig()">
         </div>
-
         <div class="field">
           <label>LinkedIn URL</label>
-          <input type="text" id="f-linkedin"
-                 placeholder="https://linkedin.com/in/..."
-                 oninput="updateSig()">
+          <input type="text" id="f-linkedin" placeholder="https://linkedin.com/in/..." oninput="updateSig()">
         </div>
-
       </div>
 
-      <!-- DISCLAIMER -->
       <div class="toggle-row">
         <label>Show Privacy Disclaimer</label>
-
         <label class="toggle">
-          <input type="checkbox"
-                 id="t-disclaimer"
-                 checked
-                 onchange="updateSig()">
+          <input type="checkbox" id="t-disclaimer" checked onchange="updateSig()">
           <span class="toggle-slider"></span>
         </label>
       </div>
-
-    </div>
-
-    <!-- ========================= -->
-    <!-- EXPORT MOVED LEFT -->
-    <!-- ========================= -->
-
-    <div class="copy-area">
-
-      <div class="section-label">Export</div>
-
-      <p class="copy-hint">
-        <strong>Click the button below</strong>
-        to copy the signature HTML, then paste it into your
-        email client's signature editor.
-      </p>
-
-      <button class="btn-copy" onclick="copySig(this)">
-
-        <svg width="14"
-             height="14"
-             viewBox="0 0 24 24"
-             fill="none"
-             stroke="currentColor"
-             stroke-width="2">
-
-          <rect x="9" y="9" width="13" height="13" rx="2"/>
-          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-
-        </svg>
-
-        Copy Signature HTML
-
-      </button>
-
     </div>
 
   </div>
 
-  <!-- ========================= -->
-  <!-- RIGHT PREVIEW PANEL -->
-  <!-- ========================= -->
-
+  <!-- ── PREVIEW PANEL ── -->
   <div class="preview-panel">
 
-    <div class="preview-layout">
-
-      <!-- PREVIEW -->
-      <div class="preview-main">
-
-        <div>
-          <div class="section-label">Live Preview</div>
-
-          <div class="bg-switcher">
-            <button class="bg-btn active" onclick="setBg('white',this)">
-              White
-            </button>
-
-            <button class="bg-btn" onclick="setBg('dark',this)">
-              Dark
-            </button>
-
-            <button class="bg-btn" onclick="setBg('trans',this)">
-              Transparent
-            </button>
-          </div>
-
-          <div id="sig-preview-wrapper"
-               class="bg-white"
-               style="padding:20px; display:inline-block;">
-
-            <!-- SIGNATURE -->
-            <div id="sig-root" style="width:450px;">
-
-              <!-- KEEP YOUR EXISTING SIGNATURE HTML HERE -->
-              <!-- NO CHANGES REQUIRED -->
-
-            </div>
-
-          </div>
-
-        </div>
-
+    <div class="preview-and-export">
+    <div class="preview-col">
+      <div class="section-label">Live Preview</div>
+      <div class="bg-switcher">
+        <button class="bg-btn active" onclick="setBg('white',this)">White</button>
+        <button class="bg-btn" onclick="setBg('dark',this)">Dark</button>
+        <button class="bg-btn" onclick="setBg('trans',this)">Transparent</button>
       </div>
 
-      <!-- ========================= -->
-      <!-- INSTRUCTIONS MOVED RIGHT -->
-      <!-- ========================= -->
+      <div id="sig-preview-wrapper" class="bg-white" style="padding: 20px; display: inline-block;">
+        <!-- SIGNATURE PREVIEW -->
+        <div id="sig-root" style="width:450px;">
 
-      <div class="preview-side">
+        <table cellpadding="0" cellspacing="0" border="0" id="sig-main-table"
+               style="width:450px;max-width:450px;font-family:'PT Sans Caption','PT Sans',Arial,sans-serif;font-size:10px;color:#222222;border-collapse:collapse;">
+          <tr>
+            <td id="sig-logo-td" valign="middle" style="width:68px;padding-right:12px;vertical-align:middle;">
+              <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMzguNzUgMzY0IDE1MC41Ij4KICAKPHN0eWxlPgogIC5zdDAgewogICAgZmlsbDogbm9uZTsKICB9CiAgLnN0MSB7CiAgICBmaWxsOiAjQzdBODRDOwogIH0KICAKPC9zdHlsZT4KICAKPG1hc2sgaWQ9Im1hc2swIiBzdHlsZT0ibWFzay10eXBlOiBsdW1pbmFuY2U7Ij4KICAKPHJLZWN0IGNsYXNzPSJzdDAiIHdpZHRoPSIzNjQiIGhlaWdodD0iMzkwLjI1Ii8+CiAgCjwvbWFzaz4KICAKPGCZ3N0eWxlPSJtYXNrOiB1cmwoI21hc2swKTsiPgogIAogIDxyZWN0IHg9IjAuODMiIHk9IjM4Ljc1IiB3aWR0aD0iMzYzLjUyIiBoZWlnaHQ9IjE1MC41IiBzdHlsZT0iZmlsbDogI0M3QTg0QzsiLz4KICAKPC9nPgogIAo8ZWxsaXBzZSBjeD0iODIiIGN5PSI2NyIgcng9IjMxLjA2IiByeT0iMzEuODkiIHN0eWxlPSJmaWxsOiAjQzdBODRDOyIvPgogIAo8cGF0aCBjbGFzcz0ic3QxIiBkPSJNMTMxLDM4Ljc1YzAsLTE4LjA5IDE0LjYxLC0zMi43MzAzMy4yOSwtMzIuNzNjMTguNjgsMCAzMy44OSwxNC42MSwzMy44OSwzMi43M3YxNTAuNTBoLTM0LjQzVjM4Ljc1eiIvPgogIAo8cmVjdCB4PSIxNzguMzIiIHk9IjM4Ljc1IiB3aWR0aD0iMzQuMDUiIGhlaWdodD0iMTUwLjUiIHN0eWxlPSJmaWxsOiAjQzdBODRDOyIvPgogIAo8cGF0aCBjbGFzcz0ic3QxIiBkPSJNMjY4LjcsODkuMjVjMC0xOC42OCAxNS4xOS0zMy44OCAzMy44OC0zMy44OHMzMy44OSwxNS4xOSwzMy44OSwzMy44OHMtMTUuMTksMzMuODgtMzMuODksMzMuODhjLTE4LjY4LC0wLjAzLTMzLjg4LTE1LjIyLTMzLjg4LTMzLjg4WiIvPgogIAo8cGF0aCBjbGFzcz0ic3QxIiBkPSJNMjY4LjcsMTY4LjA2YzAtMTUuNDkgMTIuNTQtMjguMDMgMjguMDMtMjguMDNoMjkuNDVjMTUuNDksMCAyOC4wMywxMi41NCAyOC4wMywyOC4wM3YyMC4yNGgtNTUuNTFWMTY4LjA2WiIvPgogIAo8L3N2Zz4=" alt="logo" style="display:block;width:56px;height:56px;border:0;">
+            </td>
 
-        <div class="instructions">
+            <td class="sig-divider-cell" style="width:1px;background:#cccccc;padding:0;vertical-align:middle;">&nbsp;</td>
 
-          <strong>Paste Instructions</strong>
+            <td valign="middle" style="padding-left:14px;vertical-align:middle;">
+              <p class="sig-name" id="s-name">First Last</p>
+              <p class="sig-title" id="s-title">Job Title</p>
+              <p class="sig-company">Full Moon Productions, Inc.&nbsp;&nbsp;|&nbsp;&nbsp;Group Real Estate Development, LLC</p>
+              <p class="sig-contact" id="s-contact">
+                <span id="s-phonelabel">Mobile</span>:&nbsp;<a id="s-phone-link" href="#">(XXX) XXX-XXXX</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a id="s-email-link" class="email-link" href="#">email@domain.com</a>
+              </p>
+              <p class="sig-address">
+                <a href="https://maps.google.com/?q=1401+West+13th+Street+Kansas+City+MO+64102" style="color:#333333;text-decoration:none;">1401 W 13th Street, Kansas City, MO 64102</a>
+              </p>
+              <div id="s-website-row" style="display:none;">
+                <p class="sig-website"><a id="s-website-link" href="#">www.website.com</a></p>
+              </div>
+              <div id="s-social-row" class="sig-social" style="display:none;">
+                <span id="s-social-cells"></span>
+              </div>
+            </td>
 
-          <ol>
+          </tr>
 
-            <li>
-              <strong>Outlook:</strong>
-              File → Options → Mail → Signatures → New →
-              paste into the body area.
-            </li>
+          <!-- Disclaimer -->
+          <tr>
+            <td colspan="3" width="450" style="width:450px;padding-top:6px;border-top:1px solid #dddddd;">
+              <p id="s-disclaimer-row" style="margin:0;padding:0;font-family:'PT Sans Caption','PT Sans',Arial,sans-serif;font-size:6px;color:#999999;line-height:1.4;">The email you received and any files associated with it are confidential and are intended solely for the use of the individual or entity to which they are addressed. If you are not the intended recipient, you are hereby notified that any dissemination, distribution, or copying of this email and any attachments is strictly prohibited.</p>
+            </td>
+          </tr>
 
-            <li>
-              <strong>Apple Mail:</strong>
-              Mail → Settings → Signatures →
-              uncheck "Always match my default message font" →
-              paste.
-            </li>
-
-            <li>
-              <strong>Gmail:</strong>
-              Settings → See all settings → General →
-              Signature → Create new → paste.
-            </li>
-
-          </ol>
-
+        </table>
+        <!-- END SIGNATURE PREVIEW -->
         </div>
-
       </div>
+    </div><!-- end preview-col -->
 
+    <div class="export-col">
+    <div class="copy-area">
+      <div class="section-label">Export</div>
+      <p class="copy-hint"><strong>Outlook / Apple Mail / Gmail:</strong> Use Copy to paste directly into your email client's signature editor.<br><br><strong>Thunderbird (Linux/Mac/Windows):</strong> Use Download to save file, then open Preferences → Composition → Signatures.</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <button class="btn-copy" onclick="copySig(this)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy Signature HTML
+        </button>
+        <button class="btn-copy" onclick="downloadSig()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download signature.html
+        </button>
+      </div>
     </div>
 
-  </div>
+    <div class="instructions">
+      <strong>Paste Instructions</strong>
+      <ol>
+        <li><strong>Outlook:</strong> File → Options → Mail → Signatures → New → paste into the body area.</li>
+        <li><strong>Apple Mail:</strong> Mail → Settings → Signatures → uncheck "Always match my default message font" → paste.</li>
+        <li><strong>Gmail:</strong> Settings → See all settings → General → Signature → Create new → paste.</li>
+      </ol>
+    </div><!-- end export-col -->
+    </div><!-- end preview-and-export -->
 
+  </div>
 </div>
+
+<script>
+const LOGO    = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMzguNzUgMzY0IDE1MC41Ij4KICAKPHN0eWxlPgogIC5zdDAgewogICAgZmlsbDogbm9uZTsKICB9CiAgLnN0MSB7CiAgICBmaWxsOiAjQzdBODRDOwogIH0KICAKPC9zdHlsZT4KICAKPG1hc2sgaWQ9Im1hc2swIiBzdHlsZT0ibWFzay10eXBlOiBsdW1pbmFuY2U7Ij4KICAKPHJLZWN0IGNsYXNzPSJzdDAiIHdpZHRoPSIzNjQiIGhlaWdodD0iMzkwLjI1Ii8+CiAgCjwvbWFzaz4KICAKPGCZ3N0eWxlPSJtYXNrOiB1cmwoI21hc2swKTsiPgogIAogIDxyZWN0IHg9IjAuODMiIHk9IjM4Ljc1IiB3aWR0aD0iMzYzLjUyIiBoZWlnaHQ9IjE1MC41IiBzdHlsZT0iZmlsbDogI0M3QTg0QzsiLz4KICAKPC9nPgogIAo8ZWxsaXBzZSBjeD0iODIiIGN5PSI2NyIgcng9IjMxLjA2IiByeT0iMzEuODkiIHN0eWxlPSJmaWxsOiAjQzdBODRDOyIvPgogIAo8cGF0aCBjbGFzcz0ic3QxIiBkPSJNMTMxLDM4Ljc1YzAsLTE4LjA5IDE0LjYxLC0zMi43MzAzMy4yOSwtMzIuNzNjMTguNjgsMCAzMy44OSwxNC42MSwzMy44OSwzMi43M3YxNTAuNTBoLTM0LjQzVjM4Ljc1eiIvPgogIAo8cmVjdCB4PSIxNzguMzIiIHk9IjM4Ljc1IiB3aWR0aD0iMzQuMDUiIGhlaWdodD0iMTUwLjUiIHN0eWxlPSJmaWxsOiAjQzdBODRDOyIvPgogIAo8cGF0aCBjbGFzcz0ic3QxIiBkPSJNMjY4LjcsODkuMjVjMC0xOC42OCAxNS4xOS0zMy44OCAzMy44OC0zMy44OHMzMy44OSwxNS4xOSwzMy44OSwzMy44OHMtMTUuMTksMzMuODgtMzMuODksMzMuODhjLTE4LjY4LC0wLjAzLTMzLjg4LTE1LjIyLTMzLjg4LTMzLjg4WiIvPgogIAo8cGF0aCBjbGFzcz0ic3QxIiBkPSJNMjY4LjcsMTY4LjA2YzAtMTUuNDkgMTIuNTQtMjguMDMgMjguMDMtMjguMDNoMjkuNDVjMTUuNDksMCAyOC4wMywxMi41NCAyOC4wMywyOC4wM3YyMC4yNGgtNTUuNTFWMTY4LjA2WiIvPgogIAo8L3N2Zz4=" alt="logo";
+const MAPS    = "https://maps.google.com/?q=1401+West+13th+Street+Kansas+City+MO+64102";
+const DISCLAIMER = "The email you received and any files associated with it are confidential and are intended solely for the use of the individual or entity to which they are addressed. If you are not the intended recipient, you are hereby notified that any dissemination, distribution, or copying of this email and any attachments is strictly prohibited.";
+
+function e(id) { return document.getElementById(id); }
+
+function setBg(mode, btn) {
+  const wrapper = e('sig-preview-wrapper');
+  wrapper.className = 'bg-' + mode;
+  wrapper.style.padding = '20px';
+  document.querySelectorAll('.bg-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  // flip sig text color for dark bg
+  const isDark = mode === 'dark';
+  e('sig-root').style.color = isDark ? '#dddddd' : '#222222';
+  document.querySelectorAll('.sig-name').forEach(el => el.style.color = isDark ? '#ffffff' : '#111111');
+  document.querySelectorAll('.sig-title').forEach(el => el.style.color = isDark ? '#bbbbbb' : '#444444');
+  document.querySelectorAll('.sig-company, .sig-contact, .sig-address').forEach(el => el.style.color = isDark ? '#cccccc' : '#333333');
+  document.querySelectorAll('.sig-contact a:not(.email-link)').forEach(el => el.style.color = isDark ? '#cccccc' : '#333333');
+  document.querySelectorAll('.sig-address a').forEach(el => el.style.color = isDark ? '#cccccc' : '#333333');
+  document.querySelectorAll('.sig-disclaimer-wrap p').forEach(el => el.style.color = isDark ? '#777777' : '#999999');
+  e('sig-root').querySelector('.sig-divider-cell').style.background = isDark ? '#555555' : '#cccccc';
+}
+
+function updateSig() {
+  const name    = e('f-name').value.trim()    || 'First Last';
+  const title   = e('f-title').value.trim()   || 'Job Title';
+  const phone   = e('f-phone').value.trim()   || '(XXX) XXX-XXXX';
+  const label   = e('f-phonelabel').value;
+  const email   = e('f-email').value.trim()   || 'email@domain.com';
+  const phoneRaw = phone.replace(/\D/g,'');
+
+  e('s-name').textContent       = name;
+  e('s-title').textContent      = title;
+  e('s-phonelabel').textContent = label;
+  e('s-phone-link').textContent = phone;
+  e('s-phone-link').href        = 'tel:+1' + phoneRaw;
+  e('s-email-link').textContent = email;
+  e('s-email-link').href        = 'mailto:' + email;
+
+  // Website
+  const showWeb = e('t-website').checked;
+  e('website-field').style.display   = showWeb ? 'flex' : 'none';
+  e('s-website-row').style.display   = showWeb ? 'block' : 'none';
+  if (showWeb) {
+    const url = e('f-website').value.trim() || 'https://www.website.com';
+    e('s-website-link').href        = url;
+    e('s-website-link').textContent = url.replace(/^https?:\/\//,'');
+  }
+
+  // Social
+  const showSocial = e('t-social').checked;
+  e('social-fields').style.display  = showSocial ? 'flex' : 'none';
+  e('s-social-row').style.display   = showSocial ? 'block' : 'none';
+  if (showSocial) buildSocialPreview();
+
+  // Disclaimer
+  const showDisc = e('t-disclaimer').checked;
+  e('s-disclaimer-row').style.display = showDisc ? 'block' : 'none';
+}
+
+function buildSocialPreview() {
+  const fb = e('f-facebook').value.trim();
+  const ig = e('f-instagram').value.trim();
+  const li = e('f-linkedin').value.trim();
+  const items = [];
+  if (fb) items.push(`<a href="${fb}" style="color:#1877f2;text-decoration:none;font-family:'PT Sans Caption','PT Sans',Arial,sans-serif;font-size:10px;">Facebook</a>`);
+  if (ig) items.push(`<a href="${ig}" style="color:#E1306C;text-decoration:none;font-family:'PT Sans Caption','PT Sans',Arial,sans-serif;font-size:10px;">Instagram</a>`);
+  if (li) items.push(`<a href="${li}" style="color:#0077B5;text-decoration:none;font-family:'PT Sans Caption','PT Sans',Arial,sans-serif;font-size:10px;">LinkedIn</a>`);
+  e('s-social-cells').innerHTML = items.join('<span style="color:#cccccc;padding:0 6px;">|</span>');
+}
+
+function getSigHTML() {
+  const name     = e('f-name').value.trim()  || 'First Last';
+  const title    = e('f-title').value.trim() || 'Job Title';
+  const phone    = e('f-phone').value.trim() || '(XXX) XXX-XXXX';
+  const label    = e('f-phonelabel').value;
+  const email    = e('f-email').value.trim() || 'email@domain.com';
+  const phoneRaw = phone.replace(/\D/g,'');
+
+  const showWeb    = e('t-website').checked;
+  const showSocial = e('t-social').checked;
+  const showDisc   = e('t-disclaimer').checked;
+
+  let websiteHTML = '';
+  if (showWeb) {
+    const url = e('f-website').value.trim() || 'https://www.website.com';
+    const display = url.replace(/^https?:\/\//,'');
+    websiteHTML = `<p style="margin:3px 0 0 0;padding:0;font-family:'PT Sans Caption','PT Sans',Arial,sans-serif;font-size:10px;"><a href="${url}" style="color:#1a73a7;text-decoration:none;">${display}</a></p>`;
+  }
+
+  let socialHTML = '';
+  if (showSocial) {
+    const fb = e('f-facebook').value.trim();
+    const ig = e('f-instagram').value.trim();
+    const li = e('f-linkedin').value.trim();
+    const items = [];
+    if (fb) items.push(`<a href="${fb}" style="color:#1877f2;text-decoration:none;font-family:'PT Sans Caption','PT Sans',Arial,sans-serif;font-size:10px;">Facebook</a>`);
+    if (ig) { if(items.length) items.push('<span style="color:#cccccc;padding:0 6px;">|</span>'); items.push(`<a href="${ig}" style="color:#E1306C;text-decoration:none;font-family:'PT Sans Caption','PT Sans',Arial,sans-serif;font-size:10px;">Instagram</a>`); }
+    if (li) { if(items.length) items.push('<span style="color:#cccccc;padding:0 6px;">|</span>'); items.push(`<a href="${li}" style="color:#0077B5;text-decoration:none;font-family:'PT Sans Caption','PT Sans',Arial,sans-serif;font-size:10px;">LinkedIn</a>`); }
+    if (items.length) socialHTML = `<p style="margin:3px 0 0 0;padding:0;font-family:'PT Sans Caption','PT Sans',Arial,sans-serif;font-size:10px;">${items.join('')}</p>`;
+  }
+
+  let discHTML = '';
+  if (showDisc) {
+    discHTML = `
+    <tr>
+      <td colspan="3" width="450" style="width:450px;padding-top:6px;border-top:1px solid #dddddd;">
+        <p style="margin:0;padding:0;font-family:'PT Sans Caption','PT Sans',Arial,sans-serif;font-size:6px;color:#999999;line-height:1.4;">${DISCLAIMER}</p>
+      </td>
+    </tr>`;
+  }
+
+  return `<div>
+<style>
+  @media (prefers-color-scheme: dark) {
+    .fmp-sig-name { color: #ffffff !important; }
+    .fmp-sig-title { color: #bbbbbb !important; }
+    .fmp-sig-company { color: #cccccc !important; }
+    .fmp-sig-contact { color: #cccccc !important; }
+    .fmp-sig-contact a { color: #cccccc !important; }
+    .fmp-sig-contact a.fmp-email { color: #6ab0d4 !important; }
+    .fmp-sig-address { color: #cccccc !important; }
+    .fmp-sig-address a { color: #cccccc !important; }
+    .fmp-sig-website a { color: #6ab0d4 !important; }
+    .fmp-sig-divider { background-color: #555555 !important; }
+    .fmp-sig-disclaimer { color: #777777 !important; }
+    .fmp-sig-logo { filter: invert(1) !important; }
+  }
+</style>
+<table class="fmp-sig-wrap" cellpadding="0" cellspacing="0" border="0" width="450" style="font-family:'PT Sans Caption','PT Sans',Arial,sans-serif;font-size:10px;color:#222222;width:450px;max-width:450px;border-collapse:collapse;">
+  <tr>
+    <td valign="middle" width="68" style="width:68px;padding-right:12px;vertical-align:middle;">
+      <img class="fmp-sig-logo" src="${LOGO}" alt="Full Moon Productions" width="56" height="56" style="display:block;width:56px;height:56px;border:0;">
+    </td>
+    <td class="fmp-sig-divider" width="1" style="background-color:#cccccc;width:1px;padding:0;vertical-align:middle;">&nbsp;</td>
+    <td valign="middle" style="padding-left:14px;vertical-align:middle;">
+      <p class="fmp-sig-name" style="margin:0 0 1px 0;padding:0;font-family:'PT Sans Caption','PT Sans',Arial,sans-serif;font-size:20px;font-weight:700;color:#111111;line-height:1.15;">${name}</p>
+      <p class="fmp-sig-title" style="margin:0 0 5px 0;padding:0;font-family:'PT Sans Caption','PT Sans',Arial,sans-serif;font-size:12px;font-style:italic;color:#444444;">${title}</p>
+      <p class="fmp-sig-company" style="margin:0 0 3px 0;padding:0;font-family:'PT Sans Caption','PT Sans',Arial,sans-serif;font-size:10px;color:#333333;">Full Moon Productions, Inc.&nbsp;&nbsp;|&nbsp;&nbsp;Group Real Estate Development, LLC</p>
+      <p class="fmp-sig-contact" style="margin:0 0 3px 0;padding:0;font-family:'PT Sans Caption','PT Sans',Arial,sans-serif;font-size:10px;color:#333333;">${label}:&nbsp;<a href="tel:+1${phoneRaw}" style="color:#333333;text-decoration:none;">${phone}</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="mailto:${email}" class="fmp-email" style="color:#1a73a7;text-decoration:none;">${email}</a></p>
+      <p class="fmp-sig-address" style="margin:0;padding:0;font-family:'PT Sans Caption','PT Sans',Arial,sans-serif;font-size:10px;color:#333333;"><a href="${MAPS}" style="color:#333333;text-decoration:none;">1401 W 13th Street, Kansas City, MO 64102</a></p>
+      ${websiteHTML}${socialHTML}
+    </td>
+  </tr>
+  ${discHTML}
+</table>
+</div>`;
+}
+
+function copySig(btn) {
+  const html = getSigHTML();
+
+  // Method 1: Modern clipboard API with rich HTML (works in Claude, some browsers)
+  if (navigator.clipboard && window.ClipboardItem) {
+    try {
+      const blob = new Blob([html], { type: 'text/html' });
+      const textBlob = new Blob([html], { type: 'text/plain' });
+      navigator.clipboard.write([
+        new ClipboardItem({ 'text/html': blob, 'text/plain': textBlob })
+      ]).then(() => showCopied(btn)).catch(() => method2(html, btn));
+      return;
+    } catch(e) { method2(html, btn); }
+  } else {
+    method2(html, btn);
+  }
+}
+
+function method2(html, btn) {
+  // Method 2: Write to a hidden contenteditable div and copy from it
+  // This preserves HTML formatting in email clients
+  try {
+    const div = document.createElement('div');
+    div.setAttribute('contenteditable', 'true');
+    div.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;overflow:hidden;width:1px;height:1px;';
+    div.innerHTML = html;
+    document.body.appendChild(div);
+
+    const range = document.createRange();
+    range.selectNodeContents(div);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+
+    const success = document.execCommand('copy');
+    sel.removeAllRanges();
+    document.body.removeChild(div);
+
+    if (success) { showCopied(btn); }
+    else { method3(html, btn); }
+  } catch(e) { method3(html, btn); }
+}
+
+function method3(html, btn) {
+  // Method 3: Plain text fallback — copies raw HTML code
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = html;
+    ta.style.cssText = 'position:fixed;top:-9999px;opacity:0;';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showCopied(btn, true);
+  } catch(e) {
+    alert('Copy failed. Please manually select and copy the code from the preview area.');
+  }
+}
+
+function fallbackCopy(html, btn) { method2(html, btn); }
+
+function showCopied(btn, plainText) {
+  btn.classList.add('copied');
+  btn.innerHTML = plainText
+    ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Copied as HTML code'
+    : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+  setTimeout(() => {
+    btn.classList.remove('copied');
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy Signature HTML';
+  }, 2500);
+}
+
+function downloadSig() {
+  const html = getSigHTML();
+  const full = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+</head>
+<body>
+${html}
+</body>
+</html>`;
+  const blob = new Blob([full], { type: 'text/html' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'signature.html';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// init
+updateSig();
+</script>
+</body>
+</html>
