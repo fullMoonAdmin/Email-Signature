@@ -174,6 +174,25 @@
 
   .preview-panel .section-label { margin-bottom: 20px; }
 
+  .preview-and-export {
+    display: flex;
+    flex-direction: row;
+    gap: 40px;
+    align-items: flex-start;
+  }
+
+  .preview-col {
+    flex-shrink: 0;
+  }
+
+  .export-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    min-width: 240px;
+  }
+
   /* preview bg switcher */
   .bg-switcher {
     display: flex;
@@ -470,7 +489,8 @@
   <!-- ── PREVIEW PANEL ── -->
   <div class="preview-panel">
 
-    <div>
+    <div class="preview-and-export">
+    <div class="preview-col">
       <div class="section-label">Live Preview</div>
       <div class="bg-switcher">
         <button class="bg-btn active" onclick="setBg('white',this)">White</button>
@@ -520,7 +540,9 @@
         <!-- END SIGNATURE PREVIEW -->
       </div>
     </div>
+    </div><!-- end preview-col -->
 
+    <div class="export-col">
     <div class="copy-area">
       <div class="section-label">Export</div>
       <p class="copy-hint"><strong>Outlook / Apple Mail / Gmail:</strong> Use Copy to paste directly into your email client's signature editor.<br><br><strong>Thunderbird (Linux/Mac/Windows):</strong> Use Download to save a <code style="background:#333;padding:1px 5px;font-size:0.8em;">signature.html</code> file, then point Thunderbird to it under Account Settings → Signature.</p>
@@ -543,7 +565,8 @@
         <li><strong>Apple Mail:</strong> Mail → Settings → Signatures → uncheck "Always match my default message font" → paste.</li>
         <li><strong>Gmail:</strong> Settings → See all settings → General → Signature → Create new → paste.</li>
       </ol>
-    </div>
+    </div><!-- end export-col -->
+    </div><!-- end preview-and-export -->
 
   </div>
 </div>
